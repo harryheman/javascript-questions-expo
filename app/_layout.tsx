@@ -71,7 +71,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ToastManager position='center' />
+      <ToastManager
+        position='center'
+        textStyle={{
+          fontSize: 16,
+        }}
+      />
       <PaperProvider>
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
           <ClerkLoaded>
