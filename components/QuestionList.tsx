@@ -30,8 +30,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
     false,
   )
   const [loading, setLoading] = React.useState(false)
-  const [savingEnabledOrWorseResultId, setSavingEnabledOrWorseResultId] =
-    React.useState<boolean | string>(false)
+  const [savingEnabledOrResultId, setSavingEnabledOrResultId] = React.useState<
+    boolean | string
+  >(false)
 
   const { user, isSignedIn } = useUser()
 
@@ -90,12 +91,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
       return resetGame()
     }
     setGameFinished(true)
-    const canSaveOrWorseResultId = await canSave({
-      question_count: questions.length,
-      correct_answer_percent: correctAnswerPercent,
-    })
-    if (canSaveOrWorseResultId) {
-      setSavingEnabledOrWorseResultId(canSaveOrWorseResultId)
+    const canSaveOrResultId = await canSave(correctAnswerCount)
+    if (canSaveOrResultId) {
+      setSavingEnabledOrResultId(canSaveOrResultId)
     }
   }
 
@@ -109,7 +107,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
     correctAnswerPercent < 50 ? 'red' : correctAnswerPercent > 75 ? 'green' : ''
 
   const handleSaveResult = async () => {
-    if (!isSignedIn || !savingEnabledOrWorseResultId) return
+    if (!isSignedIn || !savingEnabledOrResultId) return
     setLoading(true)
     const result = await saveResult(
       {
@@ -119,7 +117,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         correct_answer_count: correctAnswerCount,
         correct_answer_percent: correctAnswerPercent,
       },
-      savingEnabledOrWorseResultId,
+      savingEnabledOrResultId,
     )
     if (!result) {
       setLoading(false)
@@ -154,7 +152,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         >
           {gameFinished ? 'Завершить' : 'Проверить'}
         </Button>
-        {gameFinished && isSignedIn && savingEnabledOrWorseResultId && (
+        {gameFinished && isSignedIn && savingEnabledOrResultId && (
           <Button
             onPress={handleSaveResult}
             mode='contained'
@@ -169,11 +167,8 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
       {gameFinished && (
         <ThemedView>
           <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
-            Правильных ответов: {correctAnswerPercent}%
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
-            ({correctAnswerCount} из {questions.length}
-            ).
+            Правильных ответов: {correctAnswerCount} из {questions.length} (
+            {correctAnswerPercent}%)
           </ThemedText>
         </ThemedView>
       )}
@@ -238,7 +233,15 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
                     <ThemedText style={{ color: 'green' }}>
                       Правильный ответ: {answers[correctAnswerIndex]}
                     </ThemedText>
-                    <SyntaxHighlighter code={explanation} />
+                    <ThemedText
+                      style={{
+                        color: '#eee',
+                        backgroundColor: '#222',
+                        padding: 16,
+                      }}
+                    >
+                      {explanation}
+                    </ThemedText>
                   </ThemedView>
                 </List.Accordion>
               )}
@@ -247,10 +250,12 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         })}
       </ThemedView>
       {gameFinished && (
-        <ThemedText type='subtitle' style={{ color }}>
-          Правильных ответов: {correctAnswerPercent}% ({correctAnswerCount} из{' '}
-          {questions.length}).
-        </ThemedText>
+        <ThemedView>
+          <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
+            Правильных ответов: {correctAnswerCount} из {questions.length} (
+            {correctAnswerPercent}%)
+          </ThemedText>
+        </ThemedView>
       )}
       <ThemedView style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
         <Button
@@ -262,7 +267,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         >
           {gameFinished ? 'Завершить' : 'Проверить'}
         </Button>
-        {gameFinished && isSignedIn && savingEnabledOrWorseResultId && (
+        {gameFinished && isSignedIn && savingEnabledOrResultId && (
           <Button
             onPress={handleSaveResult}
             mode='contained'

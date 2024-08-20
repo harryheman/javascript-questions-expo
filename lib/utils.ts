@@ -1,5 +1,4 @@
 import { getAllResults } from '@/actions/result'
-import { Result } from '../types'
 
 export function shuffle<T>(arr: T[]) {
   let l = arr.length
@@ -10,27 +9,30 @@ export function shuffle<T>(arr: T[]) {
   return arr
 }
 
-export default async function canSave(
-  resultData: Pick<Result, 'question_count' | 'correct_answer_percent'>,
-) {
+export default async function canSave(correctAnswerCount: number) {
   try {
     const results = await getAllResults()
     if (!results || results.length < 100) {
       return true
     }
 
-    const worseResult = results[results.length - 1]
+    // Находим худший результат
+    const worstResult = results[results.length - 1]
 
-    if (
-      resultData.question_count >= worseResult.question_count &&
-      resultData.correct_answer_percent >= worseResult.correct_answer_percent
-    ) {
-      return worseResult.id
+    if (correctAnswerCount >= worstResult.correct_answer_count) {
+      return worstResult.id
     }
 
-    return false
+    // Находим результат с равным количеством правильных ответов
+    const sameResult = results.find(
+      (i) => i.correct_answer_count === correctAnswerCount,
+    )
+    if (sameResult) {
+      return sameResult.id
+    }
   } catch (e) {
     console.error(e)
   }
+
   return false
 }

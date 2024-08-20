@@ -15,14 +15,14 @@ const getUniqueIdentifier = () => {
 
 const getAppName = () => {
   if (IS_DEV) {
-    return 'JavScriptQuestionsExpo (Dev)'
+    return 'JavaScriptQuestionsExpo (Dev)'
   }
 
   if (IS_PREVIEW) {
-    return 'JavScriptQuestionsExpo (Preview)'
+    return 'JavaScriptQuestionsExpo (Preview)'
   }
 
-  return 'JavScriptQuestionsExpo'
+  return 'JavaScriptQuestionsExpo'
 }
 
 export default {
