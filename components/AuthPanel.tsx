@@ -48,6 +48,7 @@ export default function AuthPanel({}: Props) {
             icon='logout'
             mode='contained'
             onPress={onSignOutPress}
+            loading={loading}
             disabled={loading}
             buttonColor={MD2Colors.blue600}
           >

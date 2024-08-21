@@ -1,11 +1,12 @@
 import { getAllResults } from '@/actions/result'
 import AuthPanel from '@/components/AuthPanel'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
-import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import type { Results } from '@/types'
 import React from 'react'
+import { ScrollView } from 'react-native'
 import { ActivityIndicator, DataTable, MD2Colors } from 'react-native-paper'
+import { Row, Table } from 'react-native-table-component'
 
 const numberOfItemsPerPageList = [5, 10, 15, 20, 25, 30, 50, 100]
 
@@ -43,36 +44,58 @@ export default function TabTwoScreen() {
     <ParallaxScrollView>
       <AuthPanel />
 
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Пользователь</DataTable.Title>
-          <DataTable.Title numeric>Вопросы</DataTable.Title>
-          <DataTable.Title numeric>Ответы</DataTable.Title>
-          <DataTable.Title numeric>Процент</DataTable.Title>
-        </DataTable.Header>
+      <ScrollView horizontal>
+        <ThemedView>
+          <Table style={{ marginTop: 8 }}>
+            <Row
+              data={['Пользователь', 'Вопросы', 'Ответы', 'Процент', 'Дата']}
+              widthArr={[120, 100, 80, 80, 180]}
+              textStyle={{ paddingHorizontal: 8 }}
+              style={{
+                backgroundColor: MD2Colors.lightBlue200,
+                paddingVertical: 8,
+              }}
+            />
+          </Table>
 
-        {results.slice(from, to).map((item) => (
-          <DataTable.Row key={item.id}>
-            <DataTable.Cell>{item.user_name}</DataTable.Cell>
-            <DataTable.Cell numeric>{item.question_count}</DataTable.Cell>
-            <DataTable.Cell numeric>{item.correct_answer_count}</DataTable.Cell>
-            <DataTable.Cell numeric>
-              {item.correct_answer_percent}
-            </DataTable.Cell>
-          </DataTable.Row>
-        ))}
-
-        <DataTable.Pagination
-          page={page}
-          numberOfPages={Math.ceil(results.length / itemsPerPage)}
-          onPageChange={(page) => setPage(page)}
-          label={`${from + 1}-${to} из ${results.length}`}
-          numberOfItemsPerPageList={numberOfItemsPerPageList}
-          numberOfItemsPerPage={itemsPerPage}
-          onItemsPerPageChange={onItemsPerPageChange}
-          showFastPaginationControls
-        />
-      </DataTable>
+          <ScrollView>
+            <Table>
+              {results.slice(from, to).map((item, index) => {
+                const data = [
+                  item.user_name,
+                  item.question_count,
+                  item.correct_answer_count,
+                  item.correct_answer_percent,
+                  new Date(item.created_at).toLocaleString(),
+                ]
+                return (
+                  <Row
+                    key={item.id}
+                    data={data}
+                    widthArr={[120, 100, 80, 80, 180]}
+                    style={{
+                      paddingVertical: 8,
+                      backgroundColor:
+                        index % 2 !== 0 ? MD2Colors.lightBlue100 : 'white',
+                    }}
+                    textStyle={{ paddingHorizontal: 8 }}
+                  />
+                )
+              })}
+            </Table>
+          </ScrollView>
+        </ThemedView>
+      </ScrollView>
+      <DataTable.Pagination
+        page={page}
+        numberOfPages={Math.ceil(results.length / itemsPerPage)}
+        onPageChange={(page) => setPage(page)}
+        label={`${from + 1}-${to} из ${results.length}`}
+        numberOfItemsPerPageList={numberOfItemsPerPageList}
+        numberOfItemsPerPage={itemsPerPage}
+        onItemsPerPageChange={onItemsPerPageChange}
+        showFastPaginationControls
+      />
     </ParallaxScrollView>
   )
 }

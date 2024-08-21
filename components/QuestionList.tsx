@@ -146,6 +146,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         <Button
           onPress={finishGame}
           mode='contained'
+          loading={loading}
           disabled={loading}
           buttonColor={MD2Colors.blue600}
           icon={gameFinished ? 'flag-checkered' : 'check'}
@@ -156,6 +157,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
           <Button
             onPress={handleSaveResult}
             mode='contained'
+            loading={loading}
             disabled={loading}
             buttonColor={MD2Colors.green600}
             icon='content-save'
@@ -167,8 +169,11 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
       {gameFinished && (
         <ThemedView>
           <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
-            Правильных ответов: {correctAnswerCount} из {questions.length} (
-            {correctAnswerPercent}%)
+            Правильных ответов:
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
+            {correctAnswerCount} из {questions.length} ({correctAnswerPercent}
+            %).
           </ThemedText>
         </ThemedView>
       )}
@@ -224,7 +229,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
                 )}
               </ThemedView>
               {isError && (
-                <List.Accordion title='Ответ и объяснение'>
+                <List.Accordion title='Ответ и объяснение' expanded>
                   <ThemedView
                     style={{
                       gap: 8,
@@ -252,8 +257,11 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
       {gameFinished && (
         <ThemedView>
           <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
-            Правильных ответов: {correctAnswerCount} из {questions.length} (
-            {correctAnswerPercent}%)
+            Правильных ответов:
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ color, textAlign: 'center' }}>
+            {correctAnswerCount} из {questions.length} ({correctAnswerPercent}
+            %).
           </ThemedText>
         </ThemedView>
       )}
@@ -261,6 +269,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         <Button
           onPress={finishGame}
           mode='contained'
+          loading={loading}
           disabled={loading}
           buttonColor={MD2Colors.blue600}
           icon={gameFinished ? 'flag-checkered' : 'check'}
@@ -271,6 +280,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
           <Button
             onPress={handleSaveResult}
             mode='contained'
+            loading={loading}
             disabled={loading}
             buttonColor={MD2Colors.green600}
             icon='content-save'
