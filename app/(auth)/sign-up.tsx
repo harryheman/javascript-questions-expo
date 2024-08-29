@@ -1,4 +1,5 @@
 import ParallaxScrollView from '@/components/ParallaxScrollView'
+import { useTheme } from '@/components/ThemeProvider'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TabBarIcon } from '@/components/navigation/TabBarIcon'
@@ -17,6 +18,8 @@ export default function SignUpScreen() {
   const [pendingVerification, setPendingVerification] = React.useState(false)
   const [code, setCode] = React.useState('')
   const [errors, setErrors] = React.useState<ClerkAPIError[]>()
+
+  const { theme } = useTheme()
 
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -79,7 +82,11 @@ export default function SignUpScreen() {
         >
           <ThemedText type='subtitle'>Регистрация</ThemedText>
           <Link href='/'>
-            <TabBarIcon size={24} name='home' />
+            <TabBarIcon
+              size={24}
+              name='home'
+              color={theme === 'light' ? 'black' : 'white'}
+            />
           </Link>
         </ThemedView>
         {!pendingVerification && (
@@ -113,7 +120,9 @@ export default function SignUpScreen() {
               mode='contained'
               icon='account'
               disabled={disabled}
-              buttonColor={MD2Colors.green600}
+              buttonColor={
+                theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+              }
               style={{ alignSelf: 'center' }}
             >
               Зарегистрироваться
@@ -141,7 +150,9 @@ export default function SignUpScreen() {
               onPress={onPressVerify}
               mode='contained'
               icon='email'
-              buttonColor={MD2Colors.green600}
+              buttonColor={
+                theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+              }
               style={{ alignSelf: 'center' }}
             >
               Подтвердить email

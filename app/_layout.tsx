@@ -1,17 +1,12 @@
+import { ThemeProvider } from '@/components/ThemeProvider'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo'
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native'
 import { createClient } from '@supabase/supabase-js'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
-import { PaperProvider } from 'react-native-paper'
 import 'react-native-reanimated'
 import ToastManager from 'toastify-react-native'
 
@@ -70,24 +65,22 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider>
       <ToastManager
         position='center'
         textStyle={{
           fontSize: 16,
         }}
       />
-      <PaperProvider>
-        <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-          <ClerkLoaded>
-            <Stack>
-              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-              <Stack.Screen name='+not-found' />
-            </Stack>
-          </ClerkLoaded>
-        </ClerkProvider>
-      </PaperProvider>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoaded>
+          <Stack>
+            <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+            <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+            <Stack.Screen name='+not-found' />
+          </Stack>
+        </ClerkLoaded>
+      </ClerkProvider>
     </ThemeProvider>
   )
 }

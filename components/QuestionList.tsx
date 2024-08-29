@@ -14,6 +14,7 @@ import canSave from '@/lib/utils'
 import { saveResult } from '@/actions/result'
 import SyntaxHighlighter from './SyntaxHighlighter'
 import { Toast } from 'toastify-react-native'
+import { useTheme } from './ThemeProvider'
 
 type Props = {
   questions: TQuestions
@@ -31,6 +32,8 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
   >(false)
 
   const { user, isSignedIn } = useUser()
+
+  const { theme } = useTheme()
 
   useEffect(() => {
     setLoading(true)
@@ -133,7 +136,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
           mode='contained'
           loading={loading}
           disabled={loading}
-          buttonColor={MD2Colors.blue600}
+          buttonColor={
+            theme === 'light' ? MD2Colors.blue600 : MD2Colors.blue400
+          }
           icon={gameFinished ? 'flag-checkered' : 'check'}
         >
           {gameFinished ? 'Завершить' : 'Проверить'}
@@ -144,7 +149,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
             mode='contained'
             loading={loading}
             disabled={loading}
-            buttonColor={MD2Colors.green600}
+            buttonColor={
+              theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+            }
             icon='content-save'
           >
             Сохранить
@@ -256,7 +263,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
           mode='contained'
           loading={loading}
           disabled={loading}
-          buttonColor={MD2Colors.blue600}
+          buttonColor={
+            theme === 'light' ? MD2Colors.blue600 : MD2Colors.blue400
+          }
           icon={gameFinished ? 'flag-checkered' : 'check'}
         >
           {gameFinished ? 'Завершить' : 'Проверить'}
@@ -267,7 +276,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
             mode='contained'
             loading={loading}
             disabled={loading}
-            buttonColor={MD2Colors.green600}
+            buttonColor={
+              theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+            }
             icon='content-save'
           >
             Сохранить

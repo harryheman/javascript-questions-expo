@@ -4,6 +4,7 @@ import { ThemedView } from './ThemedView'
 import { ThemedText } from './ThemedText'
 import { PaperSelect } from 'react-native-paper-select'
 import { Button, MD2Colors } from 'react-native-paper'
+import { useTheme } from './ThemeProvider'
 
 type Props = {
   questionCount: typeof initialQuestionsCountValue
@@ -18,6 +19,8 @@ export default function WelcomeScreen({
   setQuestionCount,
   setGameStarted,
 }: Props) {
+  const { theme } = useTheme()
+
   return (
     <ThemedView
       style={{
@@ -59,7 +62,9 @@ export default function WelcomeScreen({
         onPress={() => setGameStarted(true)}
         icon='gamepad'
         mode='contained'
-        buttonColor={MD2Colors.green600}
+        buttonColor={
+          theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+        }
       >
         Играть
       </Button>

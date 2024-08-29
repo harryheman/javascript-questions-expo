@@ -3,14 +3,16 @@ import { ThemedView } from '@/components/ThemedView'
 import { SignedIn, SignedOut, useClerk, useUser } from '@clerk/clerk-expo'
 import { Link } from 'expo-router'
 import React, { useState } from 'react'
-import { Avatar, Button, MD2Colors } from 'react-native-paper'
+import { Avatar, Button, Icon, MD2Colors } from 'react-native-paper'
+import { useTheme } from './ThemeProvider'
+import { TouchableOpacity } from 'react-native'
 
-type Props = {}
-
-export default function AuthPanel({}: Props) {
+export default function AuthPanel() {
   const { user } = useUser()
   const { signOut } = useClerk()
   const [loading, setLoading] = useState(false)
+
+  const { theme, setTheme } = useTheme()
 
   const onSignOutPress = async () => {
     setLoading(true)
@@ -44,25 +46,61 @@ export default function AuthPanel({}: Props) {
             )}
             <ThemedText>{user?.fullName}</ThemedText>
           </ThemedView>
-          <Button
-            icon='logout'
-            mode='contained'
-            onPress={onSignOutPress}
-            loading={loading}
-            disabled={loading}
-            buttonColor={MD2Colors.blue600}
+          <ThemedView
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              flexDirection: 'row',
+              gap: 16,
+            }}
           >
-            Выйти
-          </Button>
+            <TouchableOpacity
+              onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              <Icon
+                source={theme === 'dark' ? 'weather-sunny' : 'weather-night'}
+                size={18}
+              />
+            </TouchableOpacity>
+            <Button
+              icon='logout'
+              mode='contained'
+              onPress={onSignOutPress}
+              loading={loading}
+              disabled={loading}
+              buttonColor={
+                theme === 'light' ? MD2Colors.blue600 : MD2Colors.blue400
+              }
+            >
+              Выйти
+            </Button>
+          </ThemedView>
         </ThemedView>
       </SignedIn>
       <SignedOut>
-        <ThemedView style={{ alignItems: 'flex-end' }}>
+        <ThemedView
+          style={{
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            flexDirection: 'row',
+            gap: 16,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          >
+            <Icon
+              source={theme === 'dark' ? 'weather-sunny' : 'weather-night'}
+              size={18}
+            />
+          </TouchableOpacity>
           <Link href='/sign-in'>
             <Button
               icon='login'
               mode='contained'
-              buttonColor={MD2Colors.blue600}
+              buttonColor={
+                theme === 'light' ? MD2Colors.blue600 : MD2Colors.blue400
+              }
             >
               Войти
             </Button>

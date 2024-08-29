@@ -1,5 +1,6 @@
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import SignInWithOAuth from '@/components/SignInWithOAuth'
+import { useTheme } from '@/components/ThemeProvider'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TabBarIcon } from '@/components/navigation/TabBarIcon'
@@ -16,6 +17,8 @@ export default function Page() {
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [errors, setErrors] = React.useState<ClerkAPIError[]>()
+
+  const { theme } = useTheme()
 
   const onSignInPress = async () => {
     if (!isLoaded) {
@@ -57,7 +60,11 @@ export default function Page() {
         >
           <ThemedText type='subtitle'>Авторизация</ThemedText>
           <Link href='/'>
-            <TabBarIcon size={24} name='home' />
+            <TabBarIcon
+              size={24}
+              name='home'
+              color={theme === 'light' ? 'black' : 'white'}
+            />
           </Link>
         </ThemedView>
         <ThemedView style={{ gap: 8 }}>
@@ -89,7 +96,9 @@ export default function Page() {
           onPress={onSignInPress}
           mode='contained'
           disabled={disabled}
-          buttonColor={MD2Colors.green600}
+          buttonColor={
+            theme === 'light' ? MD2Colors.green600 : MD2Colors.green400
+          }
           style={{ alignSelf: 'center' }}
         >
           Войти
