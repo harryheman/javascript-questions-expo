@@ -3,8 +3,8 @@ import ParallaxScrollView from '@/components/ParallaxScrollView'
 import QuestionList from '@/components/QuestionList'
 import WelcomeScreen from '@/components/WelcomeScreen'
 import questions from '@/constants/questions'
-import { useAsyncStorage } from '@/hooks/useAsyncStorage'
 import { shuffle } from '@/lib/utils'
+import { useState } from 'react'
 import type { ListItem } from 'react-native-paper-select/lib/typescript/interface/paperSelect.interface'
 
 export const initialQuestionsCountValue = {
@@ -26,14 +26,8 @@ export const initialQuestionsCountValue = {
 }
 
 export default function HomeScreen() {
-  const [questionCount, setQuestionCount] = useAsyncStorage(
-    'javascript-question-expo:questionCount',
-    initialQuestionsCountValue,
-  )
-  const [isGameStarted, setGameStarted] = useAsyncStorage(
-    'javascript-question-expo:isGameStarted',
-    false,
-  )
+  const [questionCount, setQuestionCount] = useState(initialQuestionsCountValue)
+  const [isGameStarted, setGameStarted] = useState(false)
 
   return (
     <ParallaxScrollView>

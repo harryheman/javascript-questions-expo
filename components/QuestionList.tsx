@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ThemedText } from './ThemedText'
 import type { TQuestions } from '@/types'
 import { ThemedView } from './ThemedView'
@@ -9,7 +9,6 @@ import {
   MD2Colors,
   RadioButton,
 } from 'react-native-paper'
-import { useAsyncStorage } from '@/hooks/useAsyncStorage'
 import { useUser } from '@clerk/clerk-expo'
 import canSave from '@/lib/utils'
 import { saveResult } from '@/actions/result'
@@ -22,22 +21,19 @@ type Props = {
 }
 
 export default function QuestionList({ questions, setGameStarted }: Props) {
-  const [userAnswers, setUserAnswers] = useAsyncStorage<
+  const [userAnswers, setUserAnswers] = useState<
     Record<number, { selectedAnswerIndex: number; correct: boolean }>
-  >('javascript-question-expo:userAnswers', {})
-  const [gameFinished, setGameFinished] = useAsyncStorage(
-    'javascript-question-expo:gameFinished',
-    false,
-  )
-  const [loading, setLoading] = React.useState(false)
-  const [savingEnabledOrResultId, setSavingEnabledOrResultId] = React.useState<
+  >({})
+  const [gameFinished, setGameFinished] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [savingEnabledOrResultId, setSavingEnabledOrResultId] = useState<
     boolean | string
   >(false)
 
   const { user, isSignedIn } = useUser()
 
-  React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout
+  useEffect(() => {
+    setLoading(true)
     const newAnswers: Record<
       number,
       { selectedAnswerIndex: number; correct: boolean }
@@ -48,16 +44,8 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
         correct: questions[i].correctAnswerIndex === 0,
       }
     }
-    setLoading(true)
-    timeoutId = setTimeout(() => {
-      setLoading(false)
-      setUserAnswers(newAnswers)
-      clearTimeout(timeoutId)
-    }, 2000)
-
-    return () => {
-      clearTimeout(timeoutId)
-    }
+    setUserAnswers(newAnswers)
+    setLoading(false)
   }, [questions])
 
   const handleChange = (
@@ -79,11 +67,8 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
     setLoading(true)
     setGameFinished(false)
     setUserAnswers({})
-    const timeoutId = setTimeout(() => {
-      setLoading(false)
-      setGameStarted(false)
-      clearTimeout(timeoutId)
-    }, 2000)
+    setLoading(false)
+    setGameStarted(false)
   }
 
   const finishGame = async () => {
