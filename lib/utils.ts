@@ -1,4 +1,4 @@
-import { getAllResults } from '@/actions/result'
+import { Doc } from '@/convex/_generated/dataModel'
 
 export function shuffle<T>(arr: T[]) {
   let l = arr.length
@@ -9,29 +9,27 @@ export function shuffle<T>(arr: T[]) {
   return arr
 }
 
-export default async function canSave(correctAnswerCount: number) {
-  try {
-    const results = await getAllResults()
-    if (!results || results.length < 100) {
-      return true
-    }
+export default async function canSave(
+  results: Doc<'results'>[],
+  correctAnswerCount: number,
+) {
+  if (!results || results.length < 100) {
+    return true
+  }
 
-    // Находим худший результат
-    const worstResult = results[results.length - 1]
+  // Находим худший результат
+  const worstResult = results[results.length - 1]
 
-    if (correctAnswerCount >= worstResult.correct_answer_count) {
-      return worstResult.id
-    }
+  if (correctAnswerCount >= worstResult.correctAnswerCount) {
+    return worstResult._id
+  }
 
-    // Находим результат с равным количеством правильных ответов
-    const sameResult = results.find(
-      (i) => i.correct_answer_count === correctAnswerCount,
-    )
-    if (sameResult) {
-      return sameResult.id
-    }
-  } catch (e) {
-    console.error(e)
+  // Находим результат с равным количеством правильных ответов
+  const sameResult = results.find(
+    (i) => i.correctAnswerCount === correctAnswerCount,
+  )
+  if (sameResult) {
+    return sameResult._id
   }
 
   return false

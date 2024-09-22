@@ -1,7 +1,8 @@
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo'
-import { createClient } from '@supabase/supabase-js'
+import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo'
+import { ConvexProviderWithClerk } from 'convex/react-clerk'
+import { ConvexReactClient } from 'convex/react'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
@@ -36,16 +37,14 @@ if (!publishableKey) {
   throw new Error('Отсутствует ключ для Clerk.')
 }
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Отсутствует URL или ключ Supabase')
+if (!convexUrl) {
+  throw new Error('Отсутствует URL Convex')
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const convex = new ConvexReactClient(convexUrl)
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
@@ -74,11 +73,13 @@ export default function RootLayout() {
       />
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <ClerkLoaded>
-          <Stack>
-            <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-            <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-            <Stack.Screen name='+not-found' />
-          </Stack>
+          <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+            <Stack>
+              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+              <Stack.Screen name='+not-found' />
+            </Stack>
+          </ConvexProviderWithClerk>
         </ClerkLoaded>
       </ClerkProvider>
     </ThemeProvider>

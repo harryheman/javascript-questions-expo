@@ -1,8 +1,7 @@
-import { getAllResults } from '@/actions/result'
 import AuthPanel from '@/components/AuthPanel'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedView } from '@/components/ThemedView'
-import type { Results } from '@/types'
+import { useGetResults } from '@/hooks/useGetResults'
 import React from 'react'
 import { ScrollView } from 'react-native'
 import { ActivityIndicator, DataTable, MD2Colors } from 'react-native-paper'
@@ -15,17 +14,14 @@ export default function TabTwoScreen() {
   const [itemsPerPage, onItemsPerPageChange] = React.useState(
     numberOfItemsPerPageList[0],
   )
-  const [results, setResults] = React.useState<Results | null>(null)
 
-  React.useEffect(() => {
-    getAllResults().then((results) => setResults(results || []))
-  }, [])
+  const { data: results, isLoading } = useGetResults()
 
   React.useEffect(() => {
     setPage(0)
   }, [itemsPerPage])
 
-  if (!results) {
+  if (isLoading) {
     return (
       <ParallaxScrollView>
         <ActivityIndicator
@@ -62,15 +58,15 @@ export default function TabTwoScreen() {
             <Table>
               {results.slice(from, to).map((item, index) => {
                 const data = [
-                  item.user_name,
-                  item.question_count,
-                  item.correct_answer_count,
-                  item.correct_answer_percent,
-                  new Date(item.created_at).toLocaleString(),
+                  item.userName,
+                  item.questionCount,
+                  item.correctAnswerCount,
+                  item.correctAnswerPercent,
+                  new Date(item._creationTime).toLocaleString(),
                 ]
                 return (
                   <Row
-                    key={item.id}
+                    key={item._id}
                     data={data}
                     widthArr={[120, 100, 80, 80, 180]}
                     style={{

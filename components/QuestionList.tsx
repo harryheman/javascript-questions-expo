@@ -11,10 +11,13 @@ import {
 } from 'react-native-paper'
 import { useUser } from '@clerk/clerk-expo'
 import canSave from '@/lib/utils'
-import { saveResult } from '@/actions/result'
 import SyntaxHighlighter from './SyntaxHighlighter'
 import { Toast } from 'toastify-react-native'
 import { useTheme } from './ThemeProvider'
+import { useGetResults } from '@/hooks/useGetResults'
+import { useCreateResult } from '@/hooks/useCreateResult'
+import { useUpdateResult } from '@/hooks/useUpdateResult'
+import { Id } from '@/convex/_generated/dataModel'
 
 type Props = {
   questions: TQuestions
@@ -32,6 +35,9 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
   >(false)
 
   const { user, isSignedIn } = useUser()
+  const { data: results } = useGetResults()
+  const { mutate: createResult } = useCreateResult()
+  const { mutate: updateResult } = useUpdateResult()
 
   const { theme } = useTheme()
 
@@ -79,7 +85,7 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
       return resetGame()
     }
     setGameFinished(true)
-    const canSaveOrResultId = await canSave(correctAnswerCount)
+    const canSaveOrResultId = await canSave(results, correctAnswerCount)
     if (canSaveOrResultId) {
       setSavingEnabledOrResultId(canSaveOrResultId)
     }
@@ -97,19 +103,29 @@ export default function QuestionList({ questions, setGameStarted }: Props) {
   const handleSaveResult = async () => {
     if (!isSignedIn || !savingEnabledOrResultId) return
     setLoading(true)
-    const result = await saveResult(
-      {
-        user_id: user.id,
-        user_name: user.fullName || `${user.firstName} ${user.lastName}`.trim(),
-        question_count: questions.length,
-        correct_answer_count: correctAnswerCount,
-        correct_answer_percent: correctAnswerPercent,
-      },
-      savingEnabledOrResultId,
-    )
-    if (!result) {
+    const userName =
+      user.fullName || `${user.firstName} ${user.lastName}`.trim()
+    let resultId: Id<'results'> | undefined
+    if (typeof savingEnabledOrResultId === 'string') {
+      resultId = await updateResult({
+        id: savingEnabledOrResultId as Id<'results'>,
+        userName,
+        questionCount: questions.length,
+        correctAnswerCount: correctAnswerCount,
+        correctAnswerPercent: correctAnswerPercent,
+      })
+    } else {
+      resultId = await createResult({
+        userName,
+        questionCount: questions.length,
+        correctAnswerCount: correctAnswerCount,
+        correctAnswerPercent: correctAnswerPercent,
+      })
+    }
+    if (!resultId) {
       setLoading(false)
-      return Toast.error('При сохранении результата возникла ошибка.', 'center')
+      Toast.error('При сохранении результата возникла ошибка.', 'center')
+      return
     }
     Toast.success('Результат сохранен.')
     const timeoutId = setTimeout(() => {
